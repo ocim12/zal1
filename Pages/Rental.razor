@@ -1,0 +1,98 @@
+@page "/rental"
+@using MudBlazor
+@inject IDialogService DialogService
+
+<div style="display:flex; padding: 10px; width: fit-content; margin: 10px auto;">
+    <PickModelBrandComponent checkState="CheckState"/>
+</div>
+
+
+<MudDataGrid T="Car" Items="@cars" Filterable="false" ReadOnly="@false" SortMode="@SortMode.None" Groupable="false" EditMode="@DataGridEditMode.Form"
+    StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem" CommittedItemChanges="@CommittedItemChanges"
+    Bordered="true" Dense="true" EditTrigger="@DataGridEditTrigger.Manual">
+    <Columns>
+        <PropertyColumn Property="x => x.Id"  Title="Index"/>
+        <PropertyColumn Property="x => x.Brand"  Title="Marka"/>
+        <PropertyColumn Property="x => x.Model" Title="Model"/>
+        <PropertyColumn Property="x => x.Year" Title="Rok produkcji"/>
+        <PropertyColumn Property="x => x.Price" Title="Cena (zł/doba)">
+           <EditTemplate>
+                <MudNumericField title="Podaj cenę najmu (zł/doba)" @bind-Value="context.Item.Price" Variant="Variant.Text" Min="0"/>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.IsAvailable" Title="Dostępność">
+            <EditTemplate>
+                <MudSelect @bind-Value="context.Item.IsAvailable" Required RequiredError="You must select a Position!!!" Margin="@Margin.Dense">
+                    <MudSelectItem Value="true">Tak</MudSelectItem>
+                    <MudSelectItem Value="false">Nie</MudSelectItem>
+                </MudSelect>
+            </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.WhoRented" Title="Najemca"/>
+        <TemplateColumn CellClass="d-flex justify-end">
+            <CellTemplate>
+                <MudStack Row>
+                    <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Secondary" OnClick="@(() => DeleteCar(context.Item.Id))" >Usuń</MudButton>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+                </MudStack>
+            </CellTemplate>
+            <EditTemplate>
+            </EditTemplate>
+        </TemplateColumn>
+        
+    </Columns>
+</MudDataGrid>
+
+@code{
+    public List<Car> cars { get; set; } = new List<Car>();
+    public List<Brand> InitBrands {get; set;} = new List<Brand>();
+    [Inject] ICarService _carService { get; set; } = default!;
+    [Inject] ICarBrandService _brandService { get; set; } = default!;
+    private bool _isCellEditMode;
+    private bool _editTriggerRowClick;
+
+    // events
+    void StartedEditingItem(Car car)
+    {
+
+    }
+
+    void CanceledEditingItem(Car car)
+    {
+        
+    }
+
+    void CommittedItemChanges(Car car)
+    {
+        _carService.EditCar(car);
+        cars = _carService.GetAllCars();
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        cars = _carService.GetAllCars();
+        InitBrands = _brandService.GetAllBrands(); 
+    }
+
+    private async void DeleteCar(Guid id)
+    {
+        var carToDelete = _carService.GetCar(id);
+
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("Usuwanie samochodu");
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await _carService.DeleteCar(carToDelete);
+            
+            cars = _carService.GetAllCars();
+        } 
+        StateHasChanged();
+    }
+
+    public void CheckState(){
+        cars = _carService.GetAllCars();
+        StateHasChanged();
+    }
+}

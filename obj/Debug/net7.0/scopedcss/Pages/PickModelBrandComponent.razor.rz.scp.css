@@ -1,0 +1,22 @@
+select[b-fuwuikyh94]{
+    margin: 20px auto;
+}
+
+label[b-fuwuikyh94]{
+    margin-left: 10px;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.button1[b-fuwuikyh94]{
+    margin-bottom: 10px;
+}
+
+.comp[b-fuwuikyh94]{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.my-custom-class[b-fuwuikyh94] {
+        backdrop-filter: blur(10px);
+    }

@@ -1,0 +1,22 @@
+select{
+    margin: 20px auto;
+}
+
+label{
+    margin-left: 10px;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.button1{
+    margin-bottom: 10px;
+}
+
+.comp{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.my-custom-class {
+        backdrop-filter: blur(10px);
+    }

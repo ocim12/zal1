@@ -1,0 +1,27 @@
+@using MudBlazor
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        Czy na pewno chcesz usunąć wybrany samochód?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cofnij</MudButton>
+        <MudButton Color="Color.Primary" OnClick="DeleteServer">Usuń</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] ICarService _carService { get; set; } = default!;
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void DeleteServer()
+    {
+        Snackbar.Add("Samochód usunięty", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}
